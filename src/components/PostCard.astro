@@ -1,0 +1,37 @@
+---
+interface Props {
+  title: string;
+  category?: string;
+  date?: string;
+  author?: string;
+  excerpt?: string;
+  slug: string;
+  coverImage?: string;
+  index?: number;
+}
+
+const { title, category, date, author, excerpt, slug, coverImage, index = 0 } = Astro.props;
+
+const initials = author ? author.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() : 'A';
+const formattedDate = date ? new Date(date).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+---
+
+<a href={`/blog/${slug}`} class={`post-card fade-up ${index === 0 ? 'featured' : ''}`} style={`animation-delay: ${index * 0.06}s`}>
+  {coverImage ? (
+    <img class="post-card-image" src={coverImage} alt={title} loading="lazy" />
+  ) : (
+    <div class="post-card-image-placeholder">✦</div>
+  )}
+  <div class="post-card-body">
+    <div class="post-card-meta">
+      {category && <span class="pill">{category}</span>}
+      {formattedDate && <span class="post-card-date">{formattedDate}</span>}
+    </div>
+    <h2>{title}</h2>
+    {excerpt && <p class="post-card-excerpt">{excerpt}</p>}
+    <div class="post-card-author">
+      <div class="avatar">{initials}</div>
+      <span class="post-card-author-name">{author || 'Anónimo'}</span>
+    </div>
+  </div>
+</a>

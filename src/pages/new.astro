@@ -1,0 +1,411 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Nuevo Post — Blog" description="Crea y publica un nuevo artículo en el blog">
+  <div class="editor-page">
+    <h1>Nuevo artículo</h1>
+    <p>Completa los campos y escribe tu contenido o sube un archivo Markdown.</p>
+
+    <form id="post-form" autocomplete="off">
+
+      <!-- ── Metadata ─────────────────────── -->
+      <div class="form-section">
+        <p class="form-section-title">Información del post</p>
+
+        <div class="form-group" style="margin-bottom: 1rem">
+          <label for="post-title">Título *</label>
+          <input type="text" id="post-title" name="title" placeholder="El título de tu artículo..." required />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="post-author">Autor</label>
+            <input type="text" id="post-author" name="author" placeholder="Tu nombre" />
+          </div>
+          <div class="form-group">
+            <label for="post-category">Categoría</label>
+            <select id="post-category" name="category">
+              <option value="">Sin categoría</option>
+              <option value="Tecnología">Tecnología</option>
+              <option value="Diseño">Diseño</option>
+              <option value="Cultura">Cultura</option>
+              <option value="Lifestyle">Lifestyle</option>
+              <option value="Negocios">Negocios</option>
+              <option value="Ciencia">Ciencia</option>
+              <option value="Arte">Arte</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem">
+          <label for="post-excerpt">Extracto</label>
+          <textarea id="post-excerpt" name="excerpt" placeholder="Breve descripción del artículo (aparece en la tarjeta)..." rows="2"></textarea>
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem">
+          <label for="post-cover">URL de imagen de portada</label>
+          <input type="url" id="post-cover" name="coverImage" placeholder="https://images.unsplash.com/..." />
+        </div>
+
+        <!-- Image preview -->
+        <div id="cover-preview" style="display:none; margin-top: 0.75rem">
+          <img id="cover-preview-img" src="" alt="Preview" style="width:100%; max-height: 200px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border)" />
+        </div>
+      </div>
+
+      <!-- ── Content ──────────────────────── -->
+      <div class="form-section">
+        <p class="form-section-title">Contenido</p>
+
+        <!-- Tabs -->
+        <div class="tabs">
+          <button type="button" class="tab-btn active" id="tab-editor">✏️ Editor</button>
+          <button type="button" class="tab-btn" id="tab-upload">📄 Subir .md</button>
+        </div>
+
+        <!-- Editor Panel -->
+        <div id="panel-editor">
+          <div class="editor-toolbar" id="toolbar">
+            <button type="button" class="toolbar-btn" data-cmd="bold" title="Negrita"><b>B</b></button>
+            <button type="button" class="toolbar-btn" data-cmd="italic" title="Cursiva"><i style="font-style:italic">I</i></button>
+            <button type="button" class="toolbar-btn" data-cmd="underline" title="Subrayado"><u>U</u></button>
+            <div class="toolbar-sep"></div>
+            <button type="button" class="toolbar-btn toolbar-btn--label" data-cmd="h2" title="Encabezado 2">H2</button>
+            <button type="button" class="toolbar-btn toolbar-btn--label" data-cmd="h3" title="Encabezado 3">H3</button>
+            <div class="toolbar-sep"></div>
+            <button type="button" class="toolbar-btn" data-cmd="insertUnorderedList" title="Lista sin orden">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg>
+            </button>
+            <button type="button" class="toolbar-btn toolbar-btn--label" data-cmd="insertOrderedList" title="Lista numerada">1.</button>
+            <div class="toolbar-sep"></div>
+            <button type="button" class="toolbar-btn" data-cmd="blockquote" title="Cita">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1zm12 0c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
+            </button>
+            <button type="button" class="toolbar-btn toolbar-btn--label" data-cmd="code" title="Código">{ }</button>
+            <div class="toolbar-sep"></div>
+            <button type="button" class="toolbar-btn" data-cmd="createLink" title="Enlace">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            </button>
+            <button type="button" class="toolbar-btn toolbar-btn--label" data-cmd="hr" title="Línea horizontal">—</button>
+          </div>
+          <div class="editor-body">
+            <div
+              id="editor-content"
+              contenteditable="true"
+              role="textbox"
+              aria-multiline="true"
+              aria-label="Contenido del post"
+            ></div>
+            <div id="editor-placeholder">
+              Comienza a escribir tu artículo aquí...
+            </div>
+          </div>
+        </div>
+
+        <!-- Upload Panel -->
+        <div id="panel-upload" style="display:none">
+          <div class="upload-zone" id="upload-zone">
+            <span class="icon">📄</span>
+            <p><strong>Arrastra tu archivo .md</strong> aquí</p>
+            <p>o <strong>haz clic</strong> para seleccionar</p>
+            <small>Solo archivos Markdown (.md) · Máx 5MB</small>
+            <input type="file" id="file-input" accept=".md,text/markdown" style="display:none" />
+          </div>
+          <div id="file-info" style="display:none; margin-top: 1rem; text-align: center">
+            <span class="upload-file-name" id="file-name">📄 archivo.md</span>
+            <p style="font-size:0.8rem; color: var(--text-muted); margin-top: 0.5rem">El contenido del archivo se usará como cuerpo del post.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Actions ──────────────────────── -->
+      <div class="form-actions">
+        <button type="submit" class="btn-primary" id="submit-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          Publicar artículo
+        </button>
+        <a href="/" class="btn-secondary">Cancelar</a>
+        <span id="submit-status" style="font-size: 0.82rem; color: var(--text-muted)"></span>
+      </div>
+    </form>
+  </div>
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+</BaseLayout>
+
+<style>
+  .editor-body {
+    position: relative;
+  }
+
+  #editor-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    padding: 1.25rem;
+  }
+
+  .toolbar-btn--label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    min-width: 32px;
+    font-family: var(--font);
+  }
+
+  .editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px;
+  }
+</style>
+
+<script>
+// ─── Toast helper ──────────────────────────────────────────
+function showToast(msg: string, type: 'success' | 'error' = 'success') {
+  const t = document.getElementById('toast')!;
+  t.textContent = msg;
+  t.className = `toast ${type}`;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+// ─── Image preview ─────────────────────────────────────────
+const coverInput = document.getElementById('post-cover') as HTMLInputElement;
+const coverPreview = document.getElementById('cover-preview')!;
+const coverPreviewImg = document.getElementById('cover-preview-img') as HTMLImageElement;
+
+coverInput.addEventListener('input', () => {
+  const url = coverInput.value.trim();
+  if (url) {
+    coverPreviewImg.src = url;
+    coverPreview.style.display = 'block';
+    coverPreviewImg.onerror = () => { coverPreview.style.display = 'none'; };
+  } else {
+    coverPreview.style.display = 'none';
+  }
+});
+
+// ─── Tabs ──────────────────────────────────────────────────
+const tabEditor = document.getElementById('tab-editor')!;
+const tabUpload = document.getElementById('tab-upload')!;
+const panelEditor = document.getElementById('panel-editor')!;
+const panelUpload = document.getElementById('panel-upload')!;
+let activeTab: 'editor' | 'upload' = 'editor';
+let uploadedContent: string | null = null;
+
+function setTab(tab: 'editor' | 'upload') {
+  activeTab = tab;
+  tabEditor.classList.toggle('active', tab === 'editor');
+  tabUpload.classList.toggle('active', tab === 'upload');
+  panelEditor.style.display = tab === 'editor' ? 'block' : 'none';
+  panelUpload.style.display = tab === 'upload' ? 'block' : 'none';
+}
+
+tabEditor.addEventListener('click', () => setTab('editor'));
+tabUpload.addEventListener('click', () => setTab('upload'));
+
+// ─── Rich Text Editor ──────────────────────────────────────
+const editorEl = document.getElementById('editor-content') as HTMLDivElement;
+const placeholder = document.getElementById('editor-placeholder')!;
+
+function updatePlaceholder() {
+  placeholder.style.display = editorEl.textContent?.trim() ? 'none' : 'block';
+}
+
+editorEl.addEventListener('input', updatePlaceholder);
+editorEl.addEventListener('keydown', () => setTimeout(updatePlaceholder, 0));
+updatePlaceholder();
+
+// Toolbar actions
+function htmlToMarkdown(html: string): string {
+  // Use a simple conversion approach
+  let md = html;
+  // Block elements
+  md = md.replace(/<h2[^>]*>([\s\S]*?)<\/h2>/gi, (_, c) => `\n## ${strip(c)}\n`);
+  md = md.replace(/<h3[^>]*>([\s\S]*?)<\/h3>/gi, (_, c) => `\n### ${strip(c)}\n`);
+  md = md.replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, (_, c) => `\n> ${strip(c)}\n`);
+  md = md.replace(/<pre[^>]*><code[^>]*>([\s\S]*?)<\/code><\/pre>/gi, (_, c) => `\n\`\`\`\n${strip(c)}\n\`\`\`\n`);
+  md = md.replace(/<ul[^>]*>([\s\S]*?)<\/ul>/gi, (_, c) => c.replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, (__, li) => `- ${strip(li)}\n`));
+  md = md.replace(/<ol[^>]*>([\s\S]*?)<\/ol>/gi, (_, c) => {
+    let i = 1;
+    return c.replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, (__, li) => `${i++}. ${strip(li)}\n`);
+  });
+  md = md.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_, c) => `\n${strip(c)}\n`);
+  md = md.replace(/<br\s*\/?>/gi, '\n');
+  md = md.replace(/<hr\s*\/?>/gi, '\n---\n');
+  // Inline
+  md = md.replace(/<strong[^>]*>([\s\S]*?)<\/strong>/gi, (_, c) => `**${strip(c)}**`);
+  md = md.replace(/<b[^>]*>([\s\S]*?)<\/b>/gi, (_, c) => `**${strip(c)}**`);
+  md = md.replace(/<em[^>]*>([\s\S]*?)<\/em>/gi, (_, c) => `*${strip(c)}*`);
+  md = md.replace(/<i[^>]*>([\s\S]*?)<\/i>/gi, (_, c) => `*${strip(c)}*`);
+  md = md.replace(/<u[^>]*>([\s\S]*?)<\/u>/gi, (_, c) => `<u>${strip(c)}</u>`);
+  md = md.replace(/<code[^>]*>([\s\S]*?)<\/code>/gi, (_, c) => `\`${strip(c)}\``);
+  md = md.replace(/<a[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi, (_, href, text) => `[${strip(text)}](${href})`);
+  // Strip remaining tags
+  md = md.replace(/<[^>]+>/g, '');
+  // Decode HTML entities
+  md = md.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ').replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+  // Clean up excess newlines
+  md = md.replace(/\n{3,}/g, '\n\n').trim();
+  return md;
+}
+
+function strip(html: string): string {
+  return html.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ').trim();
+}
+
+document.querySelectorAll('.toolbar-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const cmd = (btn as HTMLElement).dataset.cmd!;
+    editorEl.focus();
+
+    if (cmd === 'h2' || cmd === 'h3') {
+      document.execCommand('formatBlock', false, cmd);
+    } else if (cmd === 'blockquote') {
+      document.execCommand('formatBlock', false, 'blockquote');
+    } else if (cmd === 'code') {
+      const sel = window.getSelection();
+      if (sel && !sel.isCollapsed) {
+        const range = sel.getRangeAt(0);
+        const code = document.createElement('code');
+        range.surroundContents(code);
+      }
+    } else if (cmd === 'hr') {
+      document.execCommand('insertHTML', false, '<hr>');
+    } else if (cmd === 'createLink') {
+      const url = window.prompt('URL del enlace:');
+      if (url) document.execCommand('createLink', false, url);
+    } else {
+      document.execCommand(cmd, false);
+    }
+
+    // Update active state
+    setTimeout(() => {
+      document.querySelectorAll('.toolbar-btn').forEach((b) => {
+        const c = (b as HTMLElement).dataset.cmd!;
+        if (['bold','italic','underline'].includes(c)) {
+          b.classList.toggle('is-active', document.queryCommandState(c));
+        }
+      });
+    }, 0);
+
+    updatePlaceholder();
+  });
+});
+
+// ─── File Upload ───────────────────────────────────────────
+const uploadZone = document.getElementById('upload-zone')!;
+const fileInput = document.getElementById('file-input') as HTMLInputElement;
+const fileInfo = document.getElementById('file-info')!;
+const fileNameEl = document.getElementById('file-name')!;
+
+function handleFile(file: File) {
+  if (!file.name.endsWith('.md') && file.type !== 'text/markdown') {
+    showToast('Solo se aceptan archivos .md', 'error');
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('El archivo es demasiado grande (máx 5MB)', 'error');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    uploadedContent = e.target?.result as string;
+    fileNameEl.textContent = `📄 ${file.name}`;
+    fileInfo.style.display = 'block';
+    uploadZone.style.borderColor = 'var(--text-primary)';
+  };
+  reader.readAsText(file);
+}
+
+uploadZone.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', () => {
+  if (fileInput.files?.[0]) handleFile(fileInput.files[0]);
+});
+
+uploadZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  uploadZone.classList.add('drag-over');
+});
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  uploadZone.classList.remove('drag-over');
+  const file = e.dataTransfer?.files[0];
+  if (file) handleFile(file);
+});
+
+// ─── Form Submit ───────────────────────────────────────────
+const form = document.getElementById('post-form') as HTMLFormElement;
+const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+const submitStatus = document.getElementById('submit-status')!;
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const title = (document.getElementById('post-title') as HTMLInputElement).value.trim();
+  if (!title) {
+    showToast('El título es requerido', 'error');
+    return;
+  }
+
+  let content = '';
+  if (activeTab === 'editor') {
+    content = htmlToMarkdown(editorEl.innerHTML);
+  } else {
+    if (!uploadedContent) {
+      showToast('Sube un archivo .md primero', 'error');
+      return;
+    }
+    content = uploadedContent;
+  }
+
+  if (!content.trim()) {
+    showToast('El contenido no puede estar vacío', 'error');
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="spinner"></span> Publicando...';
+  submitStatus.textContent = '';
+
+  try {
+    const res = await fetch('/api/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title,
+        author: (document.getElementById('post-author') as HTMLInputElement).value.trim(),
+        category: (document.getElementById('post-category') as HTMLSelectElement).value,
+        excerpt: (document.getElementById('post-excerpt') as HTMLTextAreaElement).value.trim(),
+        coverImage: (document.getElementById('post-cover') as HTMLInputElement).value.trim(),
+        content,
+        date: new Date().toISOString(),
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || 'Error publicando el post');
+    }
+
+    showToast('¡Post publicado exitosamente! 🎉', 'success');
+    setTimeout(() => {
+      window.location.href = `/blog/${data.slug}`;
+    }, 1500);
+  } catch (err: any) {
+    showToast(err.message || 'Error al publicar', 'error');
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg> Publicar artículo`;
+  }
+});
+</script>

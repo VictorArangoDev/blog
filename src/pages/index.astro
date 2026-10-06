@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+
+let posts: any[] = [];
+
+try {
+  const url = new URL('/api/posts', Astro.url);
+  const res = await fetch(url.toString());
+  if (res.ok) {
+    posts = await res.json();
+  }
+} catch (e) {
+  posts = [];
+}
+---
+
+<BaseLayout title="Blog — Inicio" description="Lee los últimos artículos publicados">
+  <div class="container">
+    <header class="page-header">
+      <h1>Insights & Stories</h1>
+      <p>Artículos sobre tecnología, diseño y cultura digital.</p>
+    </header>
+
+    {posts.length === 0 ? (
+      <div class="empty-state">
+        <span class="icon">✦</span>
+        <h3>Aún no hay posts</h3>
+        <p>Sé el primero en compartir algo interesante.</p>
+        <a href="/new" class="btn-primary">Crear primer post</a>
+      </div>
+    ) : (
+      <div class={`posts-grid ${posts.length >= 2 ? 'featured' : ''}`}>
+        {posts.map((post: any, i: number) => (
+          <PostCard
+            title={post.title}
+            slug={post.slug}
+            category={post.category}
+            date={post.date}
+            author={post.author}
+            excerpt={post.excerpt}
+            coverImage={post.coverImage}
+            index={i}
+          />
+        ))}
+      </div>
+    )}
+  </div>
+</BaseLayout>
